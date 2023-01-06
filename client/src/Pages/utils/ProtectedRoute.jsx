@@ -8,14 +8,15 @@ const ProtectedRoute = (props) => {
 
     const checkUserToken = React.useCallback(() => {
         const unAuthpaths =  ["/login", "/register"];
-        const authPaths =  ["/profile"];
+        const authPaths =  ["/profile", "/news"];
         const { pathname } = window.location;
         const isUnAuthPaths = unAuthpaths.find((path) => path === pathname);
-        const isAuthPaths = authPaths.find((path) => path === pathname);
-        console.log(isUnAuthPaths, isAuthPaths, pathname,  "pathname")
+        const isAuthPaths = authPaths.find((path) => pathname.startsWith(path));
         if (isLoggedIn && !isAuthPaths) {
+            // If user logged in blocks login and register pages
             return navigate("/");
         } else if (!isLoggedIn && !isUnAuthPaths) {
+            // If user not logged in blocks auth pages
             return navigate('/login');
         }
     }, [isLoggedIn, navigate]);
