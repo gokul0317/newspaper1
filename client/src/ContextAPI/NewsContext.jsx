@@ -1,6 +1,20 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { newsApiService } from "../api/newsApi";
-
+/* 
+{
+        "source": {
+            "id": "cnn",
+            "name": "CNN"
+        },
+        "author": "Nathaniel Meyersohn",
+        "title": "McDonald's CEO says layoffs are coming - CNN",
+        "description": "McDonald's is planning to cut some of its corporate staff, CEO Chris Kempczinski said in a memo to employees Friday.",
+        "url": "https://www.cnn.com/2023/01/06/business/mcdonalds-layoffs/index.html",
+        "urlToImage": "https://media.cnn.com/api/v1/images/stellar/prod/220831113309-01-mcdonalds-california-file.jpg?c=16x9&q=w_800,c_fill",
+        "publishedAt": "2023-01-07T14:36:00Z",
+        "content": "McDonalds is planning to cut some of its corporate staff, CEO Chris Kempczinski said in a memo to employees Friday.\r\nWe will evaluate roles and staffing levels in parts of the organization and there … [+2070 chars]"
+    }
+*/
 const initialState = {
     news: [],
     loading: false,
@@ -21,6 +35,8 @@ export const NewsContextProvider = (props) => {
     const [totalnews, setTotalNews] = useState(initialState?.totalnews);
     const [bookMarks, setBookMarks] = useState(initialState.bookMarks);
     const [search, setSearch] = useState(initialState?.search);
+    const [firstLoad, setFirstLoad] = useState(true);
+
 
     const addOrRemoveBookMark = useCallback((newsItem) => {
         const bookMarkIndex = bookMarks.findIndex((item) => item.url === newsItem.url);
@@ -50,7 +66,7 @@ export const NewsContextProvider = (props) => {
             const resp = await newsApiService.searchNews(searchText);
             setNews(resp.data.articles);
             setTotalNews(resp.data.totalResults)
-        } catch(e) {
+        } catch (e) {
             console.log("error", e);
             setNews([]);
             setTotalNews(0);
@@ -83,11 +99,19 @@ export const NewsContextProvider = (props) => {
         }
     }, [fetchArticles, searchArticle]);
 
+    const addNews = useCallback((newsItem) => {
+        setNews([
+            { ...newsItem },
+            ...news
+        ])
+    }, [news])
+
     useEffect(() => {
         const cb = async () => {
             await fetchArticles();
         }
         cb();
+        //eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const NewsContextData = {
@@ -101,7 +125,10 @@ export const NewsContextProvider = (props) => {
         search,
         setSearch,
         handleSearchArticle,
-        fetchArticles
+        fetchArticles,
+        addNews,
+        firstLoad,
+        setFirstLoad
     };
 
     return <NewsContext.Provider value={NewsContextData}>{props.children}</NewsContext.Provider>

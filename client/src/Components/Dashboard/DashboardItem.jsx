@@ -14,7 +14,7 @@ import Link from "@mui/material/Link";
 import { Link as RouterLink } from 'react-router-dom';
 import NoImage from "../../assets/images/no-image-icon.png";
 
-import { useNewsContext } from '../../ContextAPI/NewContext';
+import { useNewsContext } from '../../ContextAPI/NewsContext';
 
 export default function DashboardItem({ newsItem }) {
     const { addOrRemoveBookMark, isItembookMarked } = useNewsContext();
@@ -24,10 +24,10 @@ export default function DashboardItem({ newsItem }) {
     }, [addOrRemoveBookMark, newsItem]);
 
     const getBookMark = useCallback(() => {
-       return isItembookMarked(newsItem)
+        return isItembookMarked(newsItem)
     }, [newsItem, isItembookMarked])
 
-    return <Grid item key={newsItem?.url}><Card sx={{ maxWidth: 345 }}>
+    return <Grid item key={newsItem?.url}><Card sx={{ maxWidth: 345, minWidth: 300, height: "100%", width: "100%" }}>
         <CardHeader
             avatar={
                 <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -37,12 +37,14 @@ export default function DashboardItem({ newsItem }) {
             title={newsItem?.source?.name}
             subheader={new Date(newsItem.publishedAt).toDateString()}
         />
-        {<CardMedia
-            component="img"
-            height="200"
-            image={newsItem.urlToImage ? newsItem.urlToImage : NoImage}
-            alt="Image"
-        />}
+        {<Link component={RouterLink} to={`/news?newsURL=${newsItem?.url}`}>
+            <CardMedia
+                component="img"
+                height="200"
+                image={newsItem.urlToImage ? newsItem.urlToImage : NoImage}
+                alt="Image"
+            />
+        </Link>}
         <CardContent>
             <Link component={RouterLink} to={`/news?newsURL=${newsItem?.url}`}>
                 <Typography variant="body2" color="text.secondary">

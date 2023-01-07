@@ -1,10 +1,12 @@
+import { isNameValid } from "./common";
+
 const isEmailValid = (email) => {
     let message = "";
     const isEmailValid = isNameValid(email, "Email");
     if (isEmailValid.length) {
         message = isEmailValid;
     }
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) === false) {
+    if (/^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,3})+$/.test(email) === false) {
         message = "Email is Invalid";
     }
     return message;
@@ -22,15 +24,6 @@ const isPassWordValid = (password) => {
     }
     return message;
 }
-
-const isNameValid = (name, key) => {
-    let message = "";
-    if (!name.length) {
-        message = `${key} is required`;
-    }
-    return message;
-}
-
 
 export const registerValidation = (profilevalue) => {
     const emailError = isEmailValid(profilevalue?.email);

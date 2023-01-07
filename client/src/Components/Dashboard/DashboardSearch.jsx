@@ -5,7 +5,7 @@ import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import Clear from '@mui/icons-material/Clear';
-import { useNewsContext } from '../../ContextAPI/NewContext';
+import { useNewsContext } from '../../ContextAPI/NewsContext';
 
 export default function DashboardSearch() {
     const { search, setSearch, handleSearchArticle, fetchArticles } = useNewsContext();
@@ -18,11 +18,11 @@ export default function DashboardSearch() {
     }, [handleSearchArticle]);
 
     return (
-        <Grid container style={{ margin: "10px", justifyContent: "center" }}>
+        <Grid container style={{ margin: "10px", justifyContent: "center", width: "100%" }}>
             <Grid item>
                 <Paper
                     component="form"
-                    sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+                    sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "100%" }}
                     onSubmit={handleSearch}
                 >
                     <InputBase

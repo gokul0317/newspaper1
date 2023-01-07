@@ -5,8 +5,8 @@ const initialState = {
     profile: {
         firstName: "Gokul",
         lastName: "krishnan P",
-        password: "werewr",
-        email: "goku@gmsil.com",
+        password: "werewrasda1",
+        email: "goku@gmail.com",
         image: null
     },
     loading: false,
@@ -24,7 +24,7 @@ export const AppContextProvider = (props) => {
     const [loading, setLoading] = useState(initialState?.loading);
 
     useEffect(() => {
-        // setIsLoggedIn(true);
+        setIsLoggedIn(true);
     }, []);
 
     const updateProfile = useCallback((profile) => {

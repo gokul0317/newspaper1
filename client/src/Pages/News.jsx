@@ -3,7 +3,8 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useLocation } from 'react-router-dom';
 import NoImage from "../assets/images/no-image-icon.png";
-import { useNewsContext } from '../ContextAPI/NewContext';
+import { useNewsContext } from '../ContextAPI/NewsContext';
+import Loading from '../Components/Common/Loading';
 
 export default function News() {
     const { search } = useLocation();
@@ -23,13 +24,12 @@ export default function News() {
         setCurrentItem(getCurrentItem ? getCurrentItem : {});
     }, [getQueryURL, findCurrentItem]);
 
-    console.log(currentItem, "currentItem==>");
-    if (loading) return <>loading...</>;;
+    if (loading) return <Loading />;
 
     return (
-        <Grid container spacing={2} direction="column" style={{ gap: "1rem", margin: "1rem", alignItems: "center", justifyContent: "center", flexGrow: 1, width: "90%" }}>
-            <Grid item>
-                <img style={{ height: "300px" }} alt={currentItem?.urlToImage} src={currentItem?.urlToImage ? currentItem?.urlToImage : NoImage} />
+        <Grid container spacing={2} direction="column" style={{ gap: "1rem", margin: "1rem", alignItems: "center", justifyContent: "center", width: "90%" }}>
+            <Grid item style={{ display: "flex", alignItems: "center", justifyContent: "center"  }}>
+                <img style={{ width: "100%", maxWidth: "500px", maxHeight: "300px" }} alt={currentItem?.urlToImage} src={currentItem?.urlToImage ? currentItem?.urlToImage : NoImage} />
             </Grid>
             <Grid item>
                 <Typography variant='h5'>

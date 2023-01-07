@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 
 export default function PageContainer({ children }) {
     return (
-        <Container maxWidth="xl">
+        <Container maxWidth="lg">
             <Box sx={{ bgcolor: '#cfe8fc', minHeight: "50vh" }} >
                 {children}
             </Box>

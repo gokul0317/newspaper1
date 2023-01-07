@@ -17,7 +17,13 @@ import { useAppContext } from "../../ContextAPI/AppContext"
 import { useMemo } from 'react';
 
 
-const pages = [{ id: "dashboard", url: "/", name: "Dashboard", authRequired: true }, { id: "login", url: "/login", name: "Login", authRequired: false }, { id: "register", url: "/register", name: "Register", authRequired: false }];
+const pages = [
+    { id: "dashboard", url: "/", name: "Dashboard", authRequired: true },
+    { id: "addNews", url: "/add/news", name: "Add News", authRequired: true },
+    { id: "bookmarks", url: "/bookmarks", name: "Bookmarks", authRequired: true },
+    { id: "login", url: "/login", name: "Login", authRequired: false },
+    { id: "register", url: "/register", name: "Register", authRequired: false }
+];
 const settings = [{ id: "profile", name: "Profile", url: "/profile" }, { id: "logout", name: "Logout", url: "/#" }]
 
 export function Navbar() {

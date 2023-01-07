@@ -13,7 +13,9 @@ import { Navbar } from "./Components/Navbar";
 import Profile from "./Pages/Profile";
 import PageContainer from "./Pages/PageContainer";
 import ProtectedRoute from "./Pages/utils/ProtectedRoute";
+import Bookmarks from "./Pages/Bookmarks";
 import BlockUnAuth from "./Pages/utils/BlockUnAuth";
+import Addnews from "./Pages/Addnews";
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
           <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><BlockUnAuth><Profile /></BlockUnAuth></ProtectedRoute>} />
           <Route path="/news" element={<ProtectedRoute><BlockUnAuth><News /></BlockUnAuth></ProtectedRoute>} />
+          <Route path="/add/news" element={<ProtectedRoute><BlockUnAuth><Addnews /></BlockUnAuth></ProtectedRoute>} />
+          <Route path="/bookmarks" element={<ProtectedRoute><BlockUnAuth><Bookmarks /></BlockUnAuth></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </PageContainer>

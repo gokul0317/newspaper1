@@ -1,10 +1,4 @@
-const isNameValid = (name, key) => {
-    let message = "";
-    if (!name.length) {
-        message = `${key} is required`;
-    }
-    return message;
-}
+import { isNameValid } from "./common";
 
 export const loginValidation = (login) => {
     const emailError = isNameValid(login?.email, "Email");

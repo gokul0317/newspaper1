@@ -1,10 +1,12 @@
+import { isNameValid } from "./common";
+
 const isEmailValid = (email) => {
     let message = "";
     const isEmailValid = isNameValid(email, "Email");
     if (isEmailValid.length) {
         message = isEmailValid;
     }
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) === false) {
+    if (/^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,3})+$/.test(email) === false) {
         message = "Email is Invalid";
     }
     return message;
@@ -19,14 +21,6 @@ const isPassWordValid = (password) => {
 
     if (/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password) === false) {
         message = "Password should be Minimum eight characters, at least one letter and one number (Should not contain special characters)";
-    }
-    return message;
-}
-
-const isNameValid = (name, key) => {
-    let message = "";
-    if (!name.length) {
-        message = `${key} is required`;
     }
     return message;
 }
