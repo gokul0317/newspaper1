@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { newsApiService } from "../api/newsApi";
+import { useAlertContext } from "./AlertContext";
 /* 
 {
         "source": {
@@ -36,7 +37,7 @@ export const NewsContextProvider = (props) => {
     const [bookMarks, setBookMarks] = useState(initialState.bookMarks);
     const [search, setSearch] = useState(initialState?.search);
     const [firstLoad, setFirstLoad] = useState(true);
-
+    const { showAlert } = useAlertContext()
 
     const addOrRemoveBookMark = useCallback((newsItem) => {
         const bookMarkIndex = bookMarks.findIndex((item) => item.url === newsItem.url);
@@ -68,12 +69,13 @@ export const NewsContextProvider = (props) => {
             setTotalNews(resp.data.totalResults)
         } catch (e) {
             console.log("error", e);
+            showAlert({ message: e?.response?.data?.message, severity: "error" })
             setNews([]);
             setTotalNews(0);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [showAlert]);
 
 
     const fetchArticles = useCallback(async () => {
@@ -84,12 +86,13 @@ export const NewsContextProvider = (props) => {
             setTotalNews(resp.data.totalResults)
         } catch (e) {
             console.log("Error in new", e);
+            showAlert({ message: e?.response?.data?.message, severity: "error" })
             setNews([]);
             setTotalNews(0)
         } finally {
             setLoading(false)
         }
-    }, [setTotalNews, setNews, setLoading]);
+    }, [setTotalNews, setNews, setLoading, showAlert]);
 
     const handleSearchArticle = useCallback(async (searchText) => {
         if (!searchText.trim().length) {

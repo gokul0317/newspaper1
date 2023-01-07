@@ -16,11 +16,14 @@ import ProtectedRoute from "./Pages/utils/ProtectedRoute";
 import Bookmarks from "./Pages/Bookmarks";
 import BlockUnAuth from "./Pages/utils/BlockUnAuth";
 import Addnews from "./Pages/Addnews";
+import { useAlertContext } from './ContextAPI/AlertContext';
 
 function App() {
+  const { alertItem } = useAlertContext();
   return (
     <Router>
       <Navbar />
+      {alertItem}
       <PageContainer>
         <Routes>
           <Route path="/" exact element={<ProtectedRoute><BlockUnAuth><Dashboard /></BlockUnAuth></ProtectedRoute>} />

@@ -5,7 +5,7 @@ const initialState = {
     profile: {
         firstName: "Gokul",
         lastName: "krishnan P",
-        password: "werewrasda1",
+        password: "",
         email: "goku@gmail.com",
         image: null
     },

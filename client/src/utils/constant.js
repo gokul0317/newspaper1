@@ -1,0 +1,1 @@
+export const ALERT_CLEAR_DELAY = 3000;

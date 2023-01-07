@@ -13,6 +13,7 @@ import { addNewsValidation } from '../utils/validations/addnews';
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from '../ContextAPI/AppContext';
 import { useNewsContext } from '../ContextAPI/NewsContext';
+import { useAlertContext } from '../ContextAPI/AlertContext';
 
 const theme = createTheme();
 
@@ -37,6 +38,8 @@ export default function AddNews() {
     const navigate = useNavigate();
     const { profile } = useAppContext();
     const { addNews } = useNewsContext();
+    const { showAlert } = useAlertContext();
+
     const handleUpdateProfile = useCallback((event) => {
         const { name, value } = event.target;
         setCurrentNews({
@@ -45,7 +48,7 @@ export default function AddNews() {
         })
     }, [currentNews]);
     
-    const handleSubmit = useCallback((event) => {
+    const handleSubmit = useCallback(async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const title = data.get("title");
@@ -65,9 +68,10 @@ export default function AddNews() {
         } else {
             setErrorMessage({ ...initialError });
             addNews(formData);
+            showAlert({ message: "News Added", severity: "success" });
             navigate("/");
         }
-    }, [setErrorMessage, navigate, addNews, currentNews]);
+    }, [setErrorMessage, navigate, addNews, currentNews, showAlert]);
     
     useEffect(() => {
         setCurrentNews({

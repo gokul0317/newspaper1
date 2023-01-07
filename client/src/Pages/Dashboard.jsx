@@ -34,7 +34,6 @@ export default function Dashboard() {
         {!news.length ? <EmptyItems itemName="News" /> : news.map((newsItem) => <DashboardItem newsItem={newsItem} key={newsItem?.url} />)}
       </Grid>
     </Grid>
-
   );
 }
 
