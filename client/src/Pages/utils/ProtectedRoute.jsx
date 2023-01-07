@@ -11,7 +11,7 @@ const ProtectedRoute = (props) => {
         const authPaths =  ["/profile", "/news"];
         const { pathname } = window.location;
         const isUnAuthPaths = unAuthpaths.find((path) => path === pathname);
-        const isAuthPaths = authPaths.find((path) => pathname.startsWith(path));
+        const isAuthPaths = authPaths.find((path) => path === pathname);
         if (isLoggedIn && !isAuthPaths) {
             // If user logged in blocks login and register pages
             return navigate("/");

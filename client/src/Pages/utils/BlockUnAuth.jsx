@@ -1,8 +1,7 @@
 import { useAppContext } from '../../ContextAPI/AppContext';
 
 export default function BlockUnAuth({ children }) {
-  console.log("Blocked from viewing");
-  const { isLoggedIn } = useAppContext();
-  return isLoggedIn ? children : null;
-  
+    const { isLoggedIn } = useAppContext();
+    console.log(isLoggedIn ? "Access to view" : "Blocked from viewing");
+    return isLoggedIn ? children : null;
 }

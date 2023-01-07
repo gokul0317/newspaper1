@@ -25,7 +25,7 @@ function App() {
           <Route path="/login" element={<ProtectedRoute><Login /></ProtectedRoute>} />
           <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><BlockUnAuth><Profile /></BlockUnAuth></ProtectedRoute>} />
-          <Route path="/news/:id" element={<ProtectedRoute><BlockUnAuth><News /></BlockUnAuth></ProtectedRoute>} />
+          <Route path="/news" element={<ProtectedRoute><BlockUnAuth><News /></BlockUnAuth></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </PageContainer>

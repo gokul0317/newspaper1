@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,6 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import { Link } from 'react-router-dom';
 import { useAppContext } from "../../ContextAPI/AppContext"
+import { useMemo } from 'react';
 
 
 const pages = [{ id: "dashboard", url: "/", name: "Dashboard", authRequired: true }, { id: "login", url: "/login", name: "Login", authRequired: false }, { id: "register", url: "/register", name: "Register", authRequired: false }];
@@ -22,27 +23,27 @@ const settings = [{ id: "profile", name: "Profile", url: "/profile" }, { id: "lo
 export function Navbar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const { isLoggedIn } = useAppContext();
-    const handleOpenNavMenu = React.useCallback((event) => {
+    const { isLoggedIn, profile } = useAppContext();
+    const handleOpenNavMenu = useCallback((event) => {
         setAnchorElNav(event.currentTarget);
     }, [setAnchorElNav]);
-    const handleOpenUserMenu = React.useCallback((event) => {
+    const handleOpenUserMenu = useCallback((event) => {
         setAnchorElUser(event.currentTarget);
     }, [setAnchorElUser]);
 
-    const handleCloseNavMenu = React.useCallback(() => {
+    const handleCloseNavMenu = useCallback(() => {
         setAnchorElNav(null);
     }, [setAnchorElNav]);
 
-    const handleCloseUserMenu = React.useCallback(() => {
+    const handleCloseUserMenu = useCallback(() => {
         setAnchorElUser(null);
     }, [setAnchorElUser]);
 
-    const getCurrentPages = React.useCallback(() => {
+    const getCurrentPages = useCallback(() => {
         return pages.filter((page) => page.authRequired === isLoggedIn)
     }, [isLoggedIn])
 
-    const currentPages = getCurrentPages();
+    const currentPages = useMemo(() => getCurrentPages(), [getCurrentPages]);
 
     return (
         <AppBar position="sticky">
@@ -52,8 +53,8 @@ export function Navbar() {
                     <Typography
                         variant="h6"
                         noWrap
-                        component="a"
-                        href="/"
+                        component={Link}
+                        to="/"
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },
@@ -140,7 +141,7 @@ export function Navbar() {
                     {isLoggedIn && <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                <Avatar>{profile?.firstName[0]}</Avatar>
                             </IconButton>
                         </Tooltip>
                         <Menu

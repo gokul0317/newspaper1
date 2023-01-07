@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,17 +12,37 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
 import Copyright from './utils/CopyRights';
+import { registerValidation } from '../utils/validations/register';
 
 const theme = createTheme();
+const initialError = { firstName: "", lastName: "", email: "", password: "" }
 
 export default function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [errorMessages, setErrorMessage] = useState({ ...initialError });
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
+    const formData = {
       email: data.get('email'),
       password: data.get('password'),
-    });
+      firstName: data.get('firstName'),
+      lastName: data.get('lastName'),
+    }
+    const isRegisterValid = registerValidation(formData);
+    if(isRegisterValid.isInValid) {
+      setErrorMessage({
+        ...isRegisterValid.messages,
+      });
+    } else {
+      setErrorMessage({
+        ...initialError,
+      });
+    }
   };
 
   return (
@@ -54,6 +74,10 @@ export default function Register() {
                   id="firstName"
                   label="First Name"
                   autoFocus
+                  value={firstName}
+                  onChange={(event) => setFirstName(event.target.value)}
+                  error={!!errorMessages.firstName}
+                  helperText={errorMessages.firstName}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -63,7 +87,11 @@ export default function Register() {
                   id="lastName"
                   label="Last Name"
                   name="lastName"
-                  autoComplete="family-name"
+                  autoComplete="lastname"
+                  value={lastName}
+                  onChange={(event) => setLastName(event.target.value)}
+                  error={!!errorMessages.lastName}
+                  helperText={errorMessages.lastName}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -74,6 +102,10 @@ export default function Register() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  error={!!errorMessages.email}
+                  helperText={errorMessages.email}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -84,7 +116,11 @@ export default function Register() {
                   label="Password"
                   type="password"
                   id="password"
-                  autoComplete="new-password"
+                  autoComplete="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  error={!!errorMessages.password}
+                  helperText={errorMessages.password}
                 />
               </Grid>
             </Grid>
