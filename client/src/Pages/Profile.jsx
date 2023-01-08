@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,7 +17,7 @@ const theme = createTheme();
 const initialError = { firstName: "", lastName: "", email: "", password: "" }
 
 export default function Profile() {
-  const { profile, updateProfile, loading, setLoading } = useAppContext();
+  const { profile, updateProfile, loading } = useAppContext();
   const [userProfile, setUserProfile] = useState(profile);
   const [errorMessages, setErrorMessage] = useState({ ...initialError });
   const handleUpdateProfile = useCallback((event) => {
@@ -28,7 +28,8 @@ export default function Profile() {
     });
   }, [userProfile]);
 
-  const handleSubmit = useCallback((event) => {
+
+  const handleSubmit = useCallback(async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email");
@@ -47,14 +48,11 @@ export default function Profile() {
         ...isProfileValid.messages,
       });
     } else {
-      updateProfile(formData);
+      await updateProfile(formData);
+      setUserProfile({ ...formData, password: "" });
       setErrorMessage({ ...initialError });
     }
   }, [setErrorMessage, updateProfile]);
-
-  useEffect(() => {
-    setUserProfile(profile);
-  }, [profile, setUserProfile]);
 
   return (
     <ThemeProvider theme={theme}>

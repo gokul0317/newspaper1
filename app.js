@@ -10,7 +10,7 @@ const { addNewsValidation } = require("./helpers/validations/news");
 const { registerUser, findUserByEmail, findUserById, updateUserDetails } = require("./controllers/user");
 const { saveBookMark, getAllBookMark, removeBookMarkById } = require("./controllers/bookmark");
 const { saveNews, getAllNews } = require("./controllers/news");
-const { comparePassword } = require("./helpers/encryptPassword");
+const { comparePassword, hashPassword } = require("./helpers/encryptPassword");
 const { verifyToken, createToken } = require("./helpers/token");
 
 const app = express();
@@ -69,7 +69,7 @@ app.post("/api/register", async (req, res) => {
     }
 });
 
-app.get("/api/profile", verifyToken, async (req, res) => {
+app.get("/api/profile/get", verifyToken, async (req, res) => {
     const user = req.user;
     try {
         const userData = await findUserById(user);
@@ -87,7 +87,7 @@ app.get("/api/profile", verifyToken, async (req, res) => {
 });
 
 
-app.put("/api/profile", verifyToken, async (req, res) => {
+app.put("/api/profile/update", verifyToken, async (req, res) => {
     const user = req.user;
     const { isInValid, messages } = profileValidation(req.body);
     if (isInValid) {
@@ -107,17 +107,30 @@ app.put("/api/profile", verifyToken, async (req, res) => {
         }
         const updateData = {
             ...savedData,
-            ...req.body
+        }
+        if (req.body.email) {
+            updateData.email = req.body.email;
+        }
+        if (req.body.firstName) {
+            updateData.firstName = req.body.firstName;
+        }
+        if (req.body.lastName) {
+            updateData.lastName = req.body.lastName;
+        }
+        if (req.body.password) {
+            const hash = await hashPassword(req.body.password)
+            updateData.password = hash;
         }
         await updateUserDetails(user, updateData);
-        res.status(200).json({ data: { _id: user, ...updateData }, messages: "Profile update success" });
+        const response = { ...updateData };
+        delete response.password;
+        res.status(200).json({ data: { _id: user, ...response }, messages: "Profile update success" });
         return;
     } catch (e) {
         console.log(e, "Error in get profile");
         res.status(500).json({ messages: "profile Failed", errors: "Something went wrong" });
         return;
     }
-
 });
 
 app.post("/api/bookmark", verifyToken, async (req, res) => {

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { newsApiService } from "../api/newsApi";
+import { useAppContext } from "./AppContext";
 import { useGlobalContext } from "./GlobalContext";
 
 const initialState = {
@@ -32,7 +33,8 @@ export const NewsContextProvider = (props) => {
     const [bookMarks, setBookMarks] = useState(initialState.bookMarks);
     const [search, setSearch] = useState(initialState?.search);
     const [firstLoad, setFirstLoad] = useState(true);
-    const { showAlert } = useGlobalContext()
+    const { showAlert } = useGlobalContext();
+    const { isLoggedIn } = useAppContext()
 
     const addOrRemoveBookMark = useCallback((newsItem) => {
         const bookMarkIndex = bookMarks.findIndex((item) => item.url === newsItem.url);
@@ -105,12 +107,13 @@ export const NewsContextProvider = (props) => {
     }, [news])
 
     useEffect(() => {
+        if (!isLoggedIn) return;
         const cb = async () => {
-            await fetchArticles();
+            // await fetchArticles();
         }
         cb();
         //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isLoggedIn]);
 
     const NewsContextData = {
         news,

@@ -2,7 +2,8 @@ export const delay = ms => new Promise(res => setTimeout(res, ms));
 
 export const parseErrorMessage = (error, defaultMessage = "Failed") => {
     let parseMessage = defaultMessage;
-    const { errors, message } = error?.response?.data
+    const errors  = error?.response?.data?.errors;
+    const message = error?.response?.data?.message;
     if (errors) {
         parseMessage = "";
         parseMessage += message;

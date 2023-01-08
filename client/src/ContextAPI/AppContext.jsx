@@ -1,23 +1,24 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { UserService } from "../api/userApi";
 import { useGlobalContext } from "./GlobalContext";
+import { parseErrorMessage } from "../utils/helpers";
 
 const userService = new UserService();
 
 const initialState = {
     isLoggedIn: false,
     profile: {
-        firstName: "Gokul",
-        lastName: "krishnan P",
+        firstName: "",
+        lastName: "",
         password: "",
-        email: "goku@gmail.com",
+        email: "",
         image: null
     },
     loading: false,
     updateProfile: () => { },
     setLoading: () => { },
     userService,
-    setIsLoggedIn: () => {}
+    setIsLoggedIn: () => { }
 };
 
 const AppContext = createContext(initialState);
@@ -27,23 +28,50 @@ export const useAppContext = () => {
 }
 
 export const AppContextProvider = (props) => {
-    const { token } = useGlobalContext();
-    const [isLoggedIn, setIsLoggedIn] = useState(!!token);
+    const { token, showAlert } = useGlobalContext();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [profile, setProfile] = useState(initialState?.profile);
     const [loading, setLoading] = useState(initialState?.loading);
 
-    const updateProfile = useCallback((profile) => {
-        setProfile(profile);
-    }, [])
+
+    const updateProfile = useCallback(async (updatedValue) => {
+        try {
+            setLoading(true);
+            await userService.updateprofile(token, { ...updatedValue });
+            showAlert({ message: "Profile updated succesfully", severity: "success" })
+            setProfile({ ...updatedValue, password: "" });
+        } catch (e) {
+            console.log(e, "Update profile error");
+            const message = parseErrorMessage(e, "Failed to updated profile");
+            console.log(message, "message")
+            showAlert({ message,  severity: "error" })
+        } finally {
+            setLoading(false)
+        }
+    //eslint-disable-next-line  react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
-        if (token) {
-            setIsLoggedIn(true);
-        } else {
-            setIsLoggedIn(false);
+        const cb = async () => {
+            if (token) {
+                try {
+                    const resp = await userService.getProfile(token);
+                    setProfile({ ...resp.data.data, password: "" });
+                    if (resp) {
+                        setIsLoggedIn(true);
+                    } else {
+                        setIsLoggedIn(false);
+                    }
+                } catch (e) {
+                    setIsLoggedIn(false);
+                }
+            } else {
+                setIsLoggedIn(false);
+            }
         }
+        cb();
         //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [isLoggedIn])
 
     const AppContextData = {
         isLoggedIn,

@@ -14,8 +14,8 @@ const verifyToken = (req, res, next) => {
             res.status(401).json({ message: "Token missing", errors: "Failed to process request" });
             return;
         }
-        const verifyToken = jwt.verify(token, jwtSecret);
-        if (verifyToken) {
+        const isTokenValid = jwt.verify(token, jwtSecret);
+        if (isTokenValid) {
             const parsedToken = jwt.decode(token);
             req.user = parsedToken._id;
             next();

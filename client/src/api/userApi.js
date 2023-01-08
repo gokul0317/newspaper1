@@ -11,13 +11,19 @@ export class UserService {
 
     async register({ password, email, firstName, lastName }) {
         const URL = `${APP_BASE_URL}/register`;
-        const resp =  await axios.post(URL, { password, email, firstName, lastName });
+        const resp = await axios.post(URL, { password, email, firstName, lastName });
         return resp;
     }
 
-    async profile(token) {
-        const URL = `${APP_BASE_URL}/profile`;
-        const resp =  await axios.get(URL, { Headers: { Authorization: token } });
+    async getProfile(token) {
+        const URL = `${APP_BASE_URL}/profile/get`;
+        const resp = await axios.get(URL, { headers: { Authorization: token } });
+        return resp;
+    }
+
+    async updateprofile(token, { password, email, firstName, lastName }) {
+        const URL = `${APP_BASE_URL}/profile/update`;
+        const resp = await axios.put(URL, { password, email, firstName, lastName }, { headers: { Authorization: token } });
         return resp;
     }
 

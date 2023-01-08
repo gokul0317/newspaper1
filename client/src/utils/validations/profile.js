@@ -14,7 +14,7 @@ const isEmailValid = (email) => {
 
 const isPassWordValid = (password) => {
     let message = "";
-
+    if (password === undefined) return "";
     if (password.length && /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password) === false) {
         message = "Password should be Minimum eight characters, at least one letter and one number (Should not contain special characters)";
     }
