@@ -20,6 +20,9 @@ const findUserByEmail = async (email) => {
     return User.findOne({ email }).select("-__v");
 }
 
+const updateUserDetails = async (user, userData) => {
+    return User.findByIdAndUpdate(user, userData)
+}
 
 const findUserById = async (id) => {
     return User.findById(id).select("-password").select("-__v");
@@ -28,5 +31,6 @@ const findUserById = async (id) => {
 module.exports = {
     registerUser,
     findUserByEmail,
-    findUserById
+    findUserById,
+    updateUserDetails
 }

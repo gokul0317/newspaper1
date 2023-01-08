@@ -41,6 +41,22 @@ const registerValidation = (profilevalue) => {
     };
 }
 
+
+const profileValidation = (profilevalue) => {
+    const emailError = profilevalue?.email !== undefined ? isEmailValid(profilevalue?.email) : "";
+    const firstNameError = profilevalue?.firstName !== undefined ? isNameValid(profilevalue?.firstName, "First Name") : "";
+    const lastNameError = profilevalue?.firstName ? isNameValid(profilevalue?.lastName, "Last Name") : "";
+    return {
+        isInValid: !!emailError || !!firstNameError || !!lastNameError,
+        messages: {
+            email: emailError,
+            firstName: firstNameError,
+            lastName: lastNameError,
+        }
+    };
+}
+
 module.exports = {
-    registerValidation
+    registerValidation,
+    profileValidation
 }
