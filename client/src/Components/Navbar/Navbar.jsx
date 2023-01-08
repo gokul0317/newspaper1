@@ -15,6 +15,7 @@ import NewspaperIcon from '@mui/icons-material/Newspaper';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from "../../ContextAPI/AppContext"
 import { useGlobalContext } from '../../ContextAPI/GlobalContext';
+import { useNewsContext } from '../../ContextAPI/NewsContext';
 
 const pages = [
     { id: "dashboard", url: "/", name: "Dashboard", authRequired: true },
@@ -30,7 +31,8 @@ export function Navbar() {
     const [anchorElUser, setAnchorElUser] = useState(null);
     const navigate = useNavigate()
     const { removeToken } = useGlobalContext();
-    const { isLoggedIn, profile, setIsLoggedIn } = useAppContext();
+    const { isLoggedIn, profile, resetAppState } = useAppContext();
+    const { resetNewsState } = useNewsContext()
     const handleOpenNavMenu = useCallback((event) => {
         setAnchorElNav(event.currentTarget);
     }, [setAnchorElNav]);
@@ -49,9 +51,10 @@ export function Navbar() {
     const handleLogout = useCallback(() => {
         handleCloseUserMenu();
         removeToken();
-        setIsLoggedIn(false);
+        resetAppState();
+        resetNewsState();
         navigate("/login");
-    }, [handleCloseUserMenu, removeToken, setIsLoggedIn, navigate])
+    }, [handleCloseUserMenu, removeToken, navigate, resetAppState, resetNewsState])
 
     const getCurrentPages = useCallback(() => {
         return pages.filter((page) => page.authRequired === isLoggedIn)

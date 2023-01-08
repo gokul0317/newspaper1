@@ -23,7 +23,7 @@ const getAllBookMark = (user) => {
 }
 
 const removeBookMarkById = (bookmarkId) => {
-    return Bookmark.findByIdAndDelete(bookmarkId);
+    return Bookmark.findByIdAndRemove(bookmarkId);
 }
 
 module.exports = {

@@ -8,20 +8,22 @@ import EmptyItems from "../Components/Common/EmptyItems";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-  const { loading, news, bookMarks, firstLoad, setFirstLoad } = useNewsContext();
+  const { loading, news, bookMarks, firstLoad, setFirstLoad, bookmarkLoading } = useNewsContext();
   const navigate = useNavigate();
   useEffect(() => {
-    setFirstLoad(false);
-    if (!firstLoad){
-      return;
-    };
+    if (!loading && !bookmarkLoading && !firstLoad) {
+      return
+    }
     if (bookMarks.length && firstLoad) {
       navigate("/bookmarks");
+      setFirstLoad(false);
+    } else if (!loading && !bookmarkLoading && firstLoad) {
+      setFirstLoad(false);
     }
     //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [firstLoad])
+  }, [firstLoad, loading, bookmarkLoading]);
 
-  if (loading) {
+  if (loading || firstLoad || bookmarkLoading) {
     return <Loading />;
   }
 

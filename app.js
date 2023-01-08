@@ -9,7 +9,7 @@ const { bookmarkValidation } = require("./helpers/validations/bookmark");
 const { addNewsValidation } = require("./helpers/validations/news");
 const { registerUser, findUserByEmail, findUserById, updateUserDetails } = require("./controllers/user");
 const { saveBookMark, getAllBookMark, removeBookMarkById } = require("./controllers/bookmark");
-const { saveNews, getAllNews } = require("./controllers/news");
+const { saveNews, getAllNews, updateExtraFields } = require("./controllers/news");
 const { comparePassword, hashPassword } = require("./helpers/encryptPassword");
 const { verifyToken, createToken } = require("./helpers/token");
 
@@ -162,8 +162,13 @@ app.post("/api/news", verifyToken, async (req, res) => {
         return;
     }
     try {
+        console.log(req.body.description, "req.body===>");
         const savedNews = await saveNews(req.body);
-        res.status(200).json({ message: "News add success", data: savedNews });
+        const udpateValue = {
+            url: savedNews._id
+        }
+        await updateExtraFields(udpateValue, savedNews._id);
+        res.status(200).json({ message: "News add success", data: { ...savedNews._doc, ...udpateValue } });
         return;
     } catch (e) {
         console.log(e, "Error in save News")
@@ -210,8 +215,7 @@ app.get("/api/bookmark", verifyToken, async (req, res) => {
 
 app.get("/api/news", verifyToken, async (req, res) => {
     try {
-        const user = req.user;
-        const news = await getAllNews(user);
+        const news = await getAllNews();
         res.status(200).json({ message: "News retreive success", data: news });
         return;
     } catch (e) {

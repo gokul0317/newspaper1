@@ -15,4 +15,4 @@ class NewApiService {
     }
 }
 
-export const newsApiService = new NewApiService()
+export const newsApiService = new NewApiService();

@@ -33,7 +33,7 @@ const initialData = {
 }
 
 export default function AddNews() {
-    const [currentNews, setCurrentNews] = useState({ ...initialData, url: "1" })
+    const [currentNews, setCurrentNews] = useState({ ...initialData })
     const [errorMessages, setErrorMessage] = useState({ ...initialError });
     const navigate = useNavigate();
     const { profile } = useAppContext();
@@ -67,7 +67,7 @@ export default function AddNews() {
             });
         } else {
             setErrorMessage({ ...initialError });
-            addNews(formData);
+            await addNews(formData);
             showAlert({ message: "News Added", severity: "success" });
             navigate("/");
         }
@@ -77,7 +77,6 @@ export default function AddNews() {
         setCurrentNews({
             ...currentNews, 
             author: `${profile.firstName},${profile.lastName}`,
-            publishedAt: new Date().toISOString()
         })
         //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [profile]);

@@ -2,10 +2,15 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { newsApiService } from "../api/newsApi";
 import { useAppContext } from "./AppContext";
 import { useGlobalContext } from "./GlobalContext";
+import { customNewsService } from "../api/customNewsApi";
+import { parseErrorMessage } from "../utils/helpers"
+
 
 const initialState = {
     news: [],
-    loading: false,
+    loading: true,
+    bookmarkLoading: true,
+    setBookmarkLoading: () => {},
     totalnews: 0,
     bookMarks: [],
     search: "",
@@ -18,6 +23,7 @@ const initialState = {
     fetchArticles: () => { },
     addNews: () => { },
     firstLoad: true,
+    resetNewsState: () => {}
 };
 
 const NewsContext = createContext(initialState);
@@ -29,23 +35,38 @@ export const useNewsContext = () => {
 export const NewsContextProvider = (props) => {
     const [news, setNews] = useState(initialState?.news);
     const [loading, setLoading] = useState(initialState?.loading);
-    const [totalnews, setTotalNews] = useState(initialState?.totalnews);
-    const [bookMarks, setBookMarks] = useState(initialState.bookMarks);
+    const [bookmarkLoading, setBookmarkLoading] = useState(initialState?.bookmarkLoading);
+    const [bookMarks, setBookMarks] = useState(initialState?.bookMarks);
     const [search, setSearch] = useState(initialState?.search);
-    const [firstLoad, setFirstLoad] = useState(true);
-    const { showAlert } = useGlobalContext();
+    const [firstLoad, setFirstLoad] = useState(initialState.firstLoad);
+    const { showAlert, token } = useGlobalContext();
     const { isLoggedIn } = useAppContext()
 
-    const addOrRemoveBookMark = useCallback((newsItem) => {
-        const bookMarkIndex = bookMarks.findIndex((item) => item.url === newsItem.url);
-        if (bookMarkIndex !== -1) {
-            const bookMarksCopy = [...bookMarks];
-            bookMarksCopy.splice(bookMarkIndex, 1);
-            setBookMarks(bookMarksCopy);
-        } else {
-            setBookMarks([...bookMarks, { ...newsItem }])
+    const resetNewsState = useCallback(() => {
+        setNews(initialState?.news);
+        setLoading(initialState?.loading);
+        setBookmarkLoading(initialState?.validUser);
+        setBookmarkLoading(initialState?.bookmarkLoading);
+        setBookMarks(initialState?.bookMarks);
+        setFirstLoad(initialState?.firstLoad);
+    }, []);
+
+    const addOrRemoveBookMark = useCallback(async (newsItem) => {
+        try {
+            const bookMarkIndex = bookMarks.findIndex((item) => item.url === newsItem.url);
+            if (bookMarkIndex !== -1) {
+                const bookMarksCopy = [...bookMarks];
+                bookMarksCopy.splice(bookMarkIndex, 1);
+                await customNewsService.deleteBookmarks(bookMarks[bookMarkIndex]._id, token);
+                setBookMarks(bookMarksCopy);
+            } else {
+                const bookMarkResponse = await customNewsService.addBookmarks(newsItem, token);
+                setBookMarks([...bookMarks, { ...bookMarkResponse.data.data }])
+            }
+        } catch (e) {
+            console.log("Error in bookmark", e)
         }
-    }, [bookMarks, setBookMarks]);
+    }, [bookMarks, setBookMarks, token]);
 
     const isItembookMarked = useCallback((newsItem) => {
         const bookMarkItem = bookMarks.find((item) => item.url === newsItem.url);
@@ -63,33 +84,58 @@ export const NewsContextProvider = (props) => {
             setLoading(true);
             const resp = await newsApiService.searchNews(searchText);
             setNews(resp.data.articles);
-            setTotalNews(resp.data.totalResults)
         } catch (e) {
             console.log("error", e);
             showAlert({ message: e?.response?.data?.message, severity: "error" })
             setNews([]);
-            setTotalNews(0);
         } finally {
             setLoading(false);
         }
     }, [showAlert]);
 
+    const fetchCustomArticles = useCallback(async () => {
+        const resp = await customNewsService.getAllCustomNews(token);
+        return resp.data.data;
+    }, [token])
+
+    const fetchNewsApiArtciles = useCallback(async () => {
+        const resp = await newsApiService.fetchNewsFeed();
+        return resp.data.articles;
+    }, [])
+
 
     const fetchArticles = useCallback(async () => {
         try {
             setLoading(true)
-            const resp = await newsApiService.fetchNewsFeed();
-            setNews(resp.data.articles);
-            setTotalNews(resp.data.totalResults)
+            let newsList = [];
+            // const promises = [fetchCustomArticles(), fetchNewsApiArtciles()];
+            // console.log(fetchNewsApiArtciles());
+            const promises = [fetchCustomArticles()];
+            const result = await Promise.allSettled(promises);
+            const succeded = result.filter((resultItem) => resultItem.status === 'fulfilled');
+            succeded.forEach((item) => newsList = [...newsList, ...item.value]);
+            setNews([...newsList]);
         } catch (e) {
             console.log("Error in new", e);
             showAlert({ message: e?.response?.data?.message, severity: "error" })
             setNews([]);
-            setTotalNews(0)
         } finally {
             setLoading(false)
         }
-    }, [setTotalNews, setNews, setLoading, showAlert]);
+    }, [setNews, setLoading, showAlert, fetchCustomArticles, fetchNewsApiArtciles]);
+
+    const fetchBookMarks = async () => {
+        try {
+            setBookmarkLoading(true);
+            const resp = await customNewsService.getBookmarks(token);
+            console.log(resp.data.data, "resp.data.data===>");
+            setBookMarks(resp.data.data);
+        } catch (e) {
+            console.log("Error getting bookmarks", e)
+        } finally {
+            setBookmarkLoading(false);
+        }
+    }
 
     const handleSearchArticle = useCallback(async (searchText) => {
         if (!searchText.trim().length) {
@@ -99,17 +145,26 @@ export const NewsContextProvider = (props) => {
         }
     }, [fetchArticles, searchArticle]);
 
-    const addNews = useCallback((newsItem) => {
-        setNews([
-            { ...newsItem },
-            ...news
-        ])
-    }, [news])
+    const addNews = useCallback(async (newsItem) => {
+        try {
+            const response = await customNewsService.saveCustomNews(newsItem, token);
+            setNews([
+                { ...response.data.data },
+                ...news
+            ]);
+            showAlert({ message: "New added successfully", severity: "success", timeOut: 8000 })
+        } catch (e) {
+            console.log("Add new error", e);
+            const message = parseErrorMessage(e, "Failed to save new");
+            showAlert({ message, severity: "error", timeOut: 8000 })
+        }
+    }, [news, setNews, token, showAlert])
 
     useEffect(() => {
         if (!isLoggedIn) return;
         const cb = async () => {
-            // await fetchArticles();
+            await fetchArticles();
+            await fetchBookMarks();
         }
         cb();
         //eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,7 +173,6 @@ export const NewsContextProvider = (props) => {
     const NewsContextData = {
         news,
         loading,
-        totalnews,
         bookMarks,
         addOrRemoveBookMark,
         isItembookMarked,
@@ -130,7 +184,9 @@ export const NewsContextProvider = (props) => {
         addNews,
         firstLoad,
         setFirstLoad,
-        setLoading
+        setLoading,
+        bookmarkLoading,
+        resetNewsState
     };
 
     return <NewsContext.Provider value={NewsContextData}>{props.children}</NewsContext.Provider>

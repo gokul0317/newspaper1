@@ -6,9 +6,9 @@ import Loading  from "../Components/Common/Loading";
 import EmptyItems from "../Components/Common/EmptyItems";
 
 export default function Bookmarks() {
-  const { loading, bookMarks } = useNewsContext();
+  const { loading, bookMarks, bookmarkLoading } = useNewsContext();
 
-  if (loading) {
+  if (loading || bookmarkLoading) {
     return <Loading />;
   }
 

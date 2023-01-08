@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -18,14 +18,25 @@ import { useNewsContext } from '../../ContextAPI/NewsContext';
 
 export default function DashboardItem({ newsItem }) {
     const { addOrRemoveBookMark, isItembookMarked } = useNewsContext();
-
-    const toggleBookMark = useCallback(() => {
-        addOrRemoveBookMark(newsItem);
+    const [disable, setDisable] = useState(false);
+    const interval = useRef(null)
+    const toggleBookMark = useCallback(async () => {
+        setDisable(true);
+        await addOrRemoveBookMark(newsItem);
+        interval.current = setTimeout(() => {
+            setDisable(false);
+        }, 500)
     }, [addOrRemoveBookMark, newsItem]);
 
     const getBookMark = useCallback(() => {
         return isItembookMarked(newsItem)
     }, [newsItem, isItembookMarked])
+
+    useEffect(() => {
+        return () => {
+            if (interval.current) clearInterval(interval.current)
+        }
+    }, [])
 
     return <Grid item key={newsItem?.url}><Card sx={{ maxWidth: 345, minWidth: 300, height: "100%", width: "100%" }}>
         <CardHeader
@@ -53,7 +64,7 @@ export default function DashboardItem({ newsItem }) {
             </Link>
         </CardContent>
         <CardActions disableSpacing>
-            <IconButton aria-label="add to favorites" onClick={toggleBookMark}>
+            <IconButton disabled={disable} aria-label="add to favorites" onClick={toggleBookMark}>
                 <Bookmark color={getBookMark() ? 'success' : ""} />
             </IconButton>
         </CardActions>

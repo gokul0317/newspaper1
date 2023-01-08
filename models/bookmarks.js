@@ -6,11 +6,11 @@ const bookmarkSchema = mongoose.Schema({
         id: String,
         name: String
     },
-    author: { type: String, required: true },
+    author: { type: String },
     title: { type: String, required: true },
     url: { type: String, required: true },
     urlToImage: { type: String },
-    content: { type: String, required: true },
+    content: { type: String },
     publishedAt: {
         type: Date,
         default: Date.now
@@ -18,7 +18,6 @@ const bookmarkSchema = mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
     }
 });
 

@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
-import { UserService } from "../api/userApi";
+import { userService } from "../api/userApi";
 import { useGlobalContext } from "./GlobalContext";
 import { parseErrorMessage } from "../utils/helpers";
 
-const userService = new UserService();
 
 const initialState = {
     isLoggedIn: false,
@@ -18,7 +17,9 @@ const initialState = {
     updateProfile: () => { },
     setLoading: () => { },
     userService,
-    setIsLoggedIn: () => { }
+    setIsLoggedIn: () => { },
+    validUser: null,
+    resetAppState: () => {}
 };
 
 const AppContext = createContext(initialState);
@@ -29,10 +30,17 @@ export const useAppContext = () => {
 
 export const AppContextProvider = (props) => {
     const { token, showAlert } = useGlobalContext();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(initialState.isLoggedIn);
     const [profile, setProfile] = useState(initialState?.profile);
     const [loading, setLoading] = useState(initialState?.loading);
+    const [validUser, setValidUser] = useState(initialState.validUser);
 
+    const resetAppState = useCallback(() => {
+        setProfile(initialState?.profile);
+        setLoading(initialState?.loading);
+        setValidUser(initialState?.validUser);
+        setIsLoggedIn(initialState.isLoggedIn)
+    }, []);
 
     const updateProfile = useCallback(async (updatedValue) => {
         try {
@@ -40,11 +48,13 @@ export const AppContextProvider = (props) => {
             await userService.updateprofile(token, { ...updatedValue });
             showAlert({ message: "Profile updated succesfully", severity: "success" })
             setProfile({ ...updatedValue, password: "" });
+            setValidUser(true)
         } catch (e) {
             console.log(e, "Update profile error");
             const message = parseErrorMessage(e, "Failed to updated profile");
             console.log(message, "message")
-            showAlert({ message,  severity: "error" })
+            showAlert({ message,  severity: "error" });
+            setValidUser(false);
         } finally {
             setLoading(false)
         }
@@ -55,6 +65,7 @@ export const AppContextProvider = (props) => {
         const cb = async () => {
             if (token) {
                 try {
+                    setLoading(true);
                     const resp = await userService.getProfile(token);
                     setProfile({ ...resp.data.data, password: "" });
                     if (resp) {
@@ -64,6 +75,8 @@ export const AppContextProvider = (props) => {
                     }
                 } catch (e) {
                     setIsLoggedIn(false);
+                } finally {
+                    setLoading(false);
                 }
             } else {
                 setIsLoggedIn(false);
@@ -81,6 +94,8 @@ export const AppContextProvider = (props) => {
         setLoading,
         userService,
         setIsLoggedIn,
+        validUser,
+        resetAppState
     };
 
     return <AppContext.Provider value={AppContextData}>{props.children}</AppContext.Provider>
