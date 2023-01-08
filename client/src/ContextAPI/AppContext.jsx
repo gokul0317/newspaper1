@@ -24,7 +24,7 @@ export const AppContextProvider = (props) => {
     const [loading, setLoading] = useState(initialState?.loading);
 
     useEffect(() => {
-        setIsLoggedIn(true);
+        setIsLoggedIn(false);
     }, []);
 
     const updateProfile = useCallback((profile) => {
