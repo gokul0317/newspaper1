@@ -1,27 +1,22 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { newsApiService } from "../api/newsApi";
-import { useAlertContext } from "./AlertContext";
-/* 
-{
-        "source": {
-            "id": "cnn",
-            "name": "CNN"
-        },
-        "author": "Nathaniel Meyersohn",
-        "title": "McDonald's CEO says layoffs are coming - CNN",
-        "description": "McDonald's is planning to cut some of its corporate staff, CEO Chris Kempczinski said in a memo to employees Friday.",
-        "url": "https://www.cnn.com/2023/01/06/business/mcdonalds-layoffs/index.html",
-        "urlToImage": "https://media.cnn.com/api/v1/images/stellar/prod/220831113309-01-mcdonalds-california-file.jpg?c=16x9&q=w_800,c_fill",
-        "publishedAt": "2023-01-07T14:36:00Z",
-        "content": "McDonalds is planning to cut some of its corporate staff, CEO Chris Kempczinski said in a memo to employees Friday.\r\nWe will evaluate roles and staffing levels in parts of the organization and there … [+2070 chars]"
-    }
-*/
+import { useGlobalContext } from "./GlobalContext";
+
 const initialState = {
     news: [],
     loading: false,
     totalnews: 0,
     bookMarks: [],
-    search: ""
+    search: "",
+    setLoading: () => { },
+    addOrRemoveBookMark: () => { },
+    isItembookMarked: () => { },
+    findCurrentItem: () => { },
+    setSearch: () => { },
+    handleSearchArticle: () => { },
+    fetchArticles: () => { },
+    addNews: () => { },
+    firstLoad: true,
 };
 
 const NewsContext = createContext(initialState);
@@ -37,7 +32,7 @@ export const NewsContextProvider = (props) => {
     const [bookMarks, setBookMarks] = useState(initialState.bookMarks);
     const [search, setSearch] = useState(initialState?.search);
     const [firstLoad, setFirstLoad] = useState(true);
-    const { showAlert } = useAlertContext()
+    const { showAlert } = useGlobalContext()
 
     const addOrRemoveBookMark = useCallback((newsItem) => {
         const bookMarkIndex = bookMarks.findIndex((item) => item.url === newsItem.url);
@@ -131,7 +126,8 @@ export const NewsContextProvider = (props) => {
         fetchArticles,
         addNews,
         firstLoad,
-        setFirstLoad
+        setFirstLoad,
+        setLoading
     };
 
     return <NewsContext.Provider value={NewsContextData}>{props.children}</NewsContext.Provider>

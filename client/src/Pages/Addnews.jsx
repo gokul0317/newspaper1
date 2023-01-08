@@ -13,7 +13,7 @@ import { addNewsValidation } from '../utils/validations/addnews';
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from '../ContextAPI/AppContext';
 import { useNewsContext } from '../ContextAPI/NewsContext';
-import { useAlertContext } from '../ContextAPI/AlertContext';
+import { useGlobalContext } from '../ContextAPI/GlobalContext';
 
 const theme = createTheme();
 
@@ -38,7 +38,7 @@ export default function AddNews() {
     const navigate = useNavigate();
     const { profile } = useAppContext();
     const { addNews } = useNewsContext();
-    const { showAlert } = useAlertContext();
+    const { showAlert } = useGlobalContext();
 
     const handleUpdateProfile = useCallback((event) => {
         const { name, value } = event.target;

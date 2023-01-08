@@ -1,4 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { UserService } from "../api/userApi";
+import { useGlobalContext } from "./GlobalContext";
+
+const userService = new UserService();
 
 const initialState = {
     isLoggedIn: false,
@@ -10,6 +14,10 @@ const initialState = {
         image: null
     },
     loading: false,
+    updateProfile: () => { },
+    setLoading: () => { },
+    userService,
+    setIsLoggedIn: () => {}
 };
 
 const AppContext = createContext(initialState);
@@ -19,16 +27,22 @@ export const useAppContext = () => {
 }
 
 export const AppContextProvider = (props) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(initialState?.isLoggedIn);
+    const { token } = useGlobalContext();
+    const [isLoggedIn, setIsLoggedIn] = useState(!!token);
     const [profile, setProfile] = useState(initialState?.profile);
     const [loading, setLoading] = useState(initialState?.loading);
 
-    useEffect(() => {
-        setIsLoggedIn(false);
-    }, []);
-
     const updateProfile = useCallback((profile) => {
         setProfile(profile);
+    }, [])
+
+    useEffect(() => {
+        if (token) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
+        }
+        //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const AppContextData = {
@@ -37,6 +51,8 @@ export const AppContextProvider = (props) => {
         loading,
         updateProfile,
         setLoading,
+        userService,
+        setIsLoggedIn,
     };
 
     return <AppContext.Provider value={AppContextData}>{props.children}</AppContext.Provider>

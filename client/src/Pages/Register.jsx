@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
@@ -10,9 +10,12 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import Copyright from './utils/CopyRights';
 import { registerValidation } from '../utils/validations/register';
+import { useAppContext } from '../ContextAPI/AppContext';
+import { useGlobalContext } from '../ContextAPI/GlobalContext';
+import { parseErrorMessage } from '../utils/helpers';
 
 const theme = createTheme();
 const initialError = { firstName: "", lastName: "", email: "", password: "" }
@@ -23,8 +26,11 @@ export default function Register() {
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [errorMessages, setErrorMessage] = useState({ ...initialError });
+  const { userService, loading, setLoading } = useAppContext();
+  const { showAlert } = useGlobalContext();
+  const navigate = useNavigate()
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const formData = {
@@ -34,14 +40,26 @@ export default function Register() {
       lastName: data.get('lastName'),
     }
     const isRegisterValid = registerValidation(formData);
-    if(isRegisterValid.isInValid) {
+    if (isRegisterValid.isInValid) {
       setErrorMessage({
         ...isRegisterValid.messages,
       });
     } else {
-      setErrorMessage({
-        ...initialError,
-      });
+      try {
+        setLoading(true);
+        await userService.register(formData);
+        showAlert({ message: "Registration success, Please login", severity: "success", timeOut: 8000 })
+        navigate("/login");
+      } catch (e) {
+        console.log(e, "Registration failed");
+        const message = parseErrorMessage(e, "Registration Failed")
+        showAlert({ message, severity: "error", timeOut: 8000 });
+      } finally {
+        setLoading(false);
+        setErrorMessage({
+          ...initialError,
+        });
+      }
     }
   };
 
@@ -124,14 +142,16 @@ export default function Register() {
                 />
               </Grid>
             </Grid>
-            <Button
+            <LoadingButton
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
+              loading={loading}
             >
               Sign Up
-            </Button>
+            </LoadingButton>
             <Grid container>
               <Grid item>
                 <Link component={RouterLink} to="/login" variant="body2">

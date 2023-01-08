@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
@@ -17,7 +17,7 @@ const theme = createTheme();
 const initialError = { firstName: "", lastName: "", email: "", password: "" }
 
 export default function Profile() {
-  const { profile, updateProfile } = useAppContext();
+  const { profile, updateProfile, loading, setLoading } = useAppContext();
   const [userProfile, setUserProfile] = useState(profile);
   const [errorMessages, setErrorMessage] = useState({ ...initialError });
   const handleUpdateProfile = useCallback((event) => {
@@ -25,7 +25,7 @@ export default function Profile() {
     setUserProfile({
       ...userProfile,
       [name]: value
-    })
+    });
   }, [userProfile]);
 
   const handleSubmit = useCallback((event) => {
@@ -132,14 +132,16 @@ export default function Profile() {
                 />
               </Grid>
             </Grid>
-            <Button
+            <LoadingButton
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
+              loading={loading}
             >
               Update
-            </Button>
+            </LoadingButton>
           </Box>
         </Box>
       </Container>

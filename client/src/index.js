@@ -4,17 +4,17 @@ import './index.css';
 import App from './App';
 import { AppContextProvider } from "./ContextAPI/AppContext";
 import { NewsContextProvider } from "./ContextAPI/NewsContext";
-import { AlertContextProvider } from "./ContextAPI/AlertContext";
+import { GlobalContextProvider } from "./ContextAPI/GlobalContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AlertContextProvider>
+    <GlobalContextProvider>
       <AppContextProvider>
         <NewsContextProvider>
           <App />
         </NewsContextProvider>
       </AppContextProvider>
-    </AlertContextProvider>
+    </GlobalContextProvider>
   </React.StrictMode>
 );

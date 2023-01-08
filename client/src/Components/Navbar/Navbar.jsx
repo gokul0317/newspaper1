@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,10 +12,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from "../../ContextAPI/AppContext"
-import { useMemo } from 'react';
-
+import { useGlobalContext } from '../../ContextAPI/GlobalContext';
 
 const pages = [
     { id: "dashboard", url: "/", name: "Dashboard", authRequired: true },
@@ -24,12 +23,14 @@ const pages = [
     { id: "login", url: "/login", name: "Login", authRequired: false },
     { id: "register", url: "/register", name: "Register", authRequired: false }
 ];
-const settings = [{ id: "profile", name: "Profile", url: "/profile" }, { id: "logout", name: "Logout", url: "/#" }]
+const settings = [{ id: "profile", name: "Profile", url: "/profile" }]
 
 export function Navbar() {
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const { isLoggedIn, profile } = useAppContext();
+    const [anchorElNav, setAnchorElNav] = useState(null);
+    const [anchorElUser, setAnchorElUser] = useState(null);
+    const navigate = useNavigate()
+    const { removeToken } = useGlobalContext();
+    const { isLoggedIn, profile, setIsLoggedIn } = useAppContext();
     const handleOpenNavMenu = useCallback((event) => {
         setAnchorElNav(event.currentTarget);
     }, [setAnchorElNav]);
@@ -45,9 +46,16 @@ export function Navbar() {
         setAnchorElUser(null);
     }, [setAnchorElUser]);
 
+    const handleLogout = useCallback(() => {
+        handleCloseUserMenu();
+        removeToken();
+        setIsLoggedIn(false);
+        navigate("/login");
+    }, [handleCloseUserMenu, removeToken, setIsLoggedIn, navigate])
+
     const getCurrentPages = useCallback(() => {
         return pages.filter((page) => page.authRequired === isLoggedIn)
-    }, [isLoggedIn])
+    }, [isLoggedIn]);
 
     const currentPages = useMemo(() => getCurrentPages(), [getCurrentPages]);
 
@@ -173,6 +181,11 @@ export function Navbar() {
                                     </Button>
                                 </MenuItem>
                             ))}
+                            <MenuItem key="logout" onClick={handleLogout}>
+                                <Button component={Link} to={"/"} variant="text" color="inherit">
+                                    Logout
+                                </Button>
+                            </MenuItem>
                         </Menu>
                     </Box>}
                 </Toolbar>

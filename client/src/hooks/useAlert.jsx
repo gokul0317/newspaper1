@@ -13,21 +13,25 @@ export default function useAlert() {
         ...initialState
     });
 
-    const showAlert = useCallback(({ message, severity = "success" }) => {
-        setAlert({
-            message,
-            severity
-        })
-    }, [setAlert])
-
     const resetAlert = useCallback(() => {
         setAlert({ ...initialState })
     }, [setAlert])
 
+    const showAlert = useCallback(({ message, severity = "success", timeOut = 3000 }) => {
+        setAlert({
+            message,
+            severity
+        })
+        alertTimeOut.current = setTimeout(() => {
+            resetAlert();
+        }, timeOut)
+    }, [setAlert, resetAlert])
+
+
     const alertItem = useMemo(() => {
         return (
             <>
-                {!!alert?.message && <Stack sx={{ width: '100%' }} spacing={2}>
+                {!!alert?.message && <Stack sx={{ width: '100%' }} position="fixed" spacing={2}>
                     <Alert severity={alert.severity} onClose={() => {
                         resetAlert();
                         alertTimeOut.current && clearTimeout(alertTimeOut.current);
