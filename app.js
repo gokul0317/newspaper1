@@ -17,7 +17,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 app.use(express.json());
 
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
     const { isInValid, messages } = loginValidation(req.body);
     if (isInValid) {
         res.status(400).json({ message: "Login Failed", errors: messages });
@@ -42,7 +42,7 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.post("/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
     const { isInValid, messages } = registerValidation(req.body);
     if (isInValid) {
         res.status(400).json({ message: "Registration Failed", errors: messages });
@@ -60,7 +60,7 @@ app.post("/register", async (req, res) => {
     }
 });
 
-app.get("/profile", verifyToken, async (req, res) => {
+app.get("/api/profile", verifyToken, async (req, res) => {
     const user = req.user;
     try {
         const userData = await findUserById(user);
@@ -75,7 +75,7 @@ app.get("/profile", verifyToken, async (req, res) => {
 
 });
 
-app.post("/bookmark", verifyToken, async (req, res) => {
+app.post("/api/bookmark", verifyToken, async (req, res) => {
     const user = req.user;
     req.body.user = user;
     const { isInValid, messages } = bookmarkValidation(req.body);
@@ -92,7 +92,7 @@ app.post("/bookmark", verifyToken, async (req, res) => {
 });
 
 
-app.post("/news", verifyToken, async (req, res) => {
+app.post("/api/news", verifyToken, async (req, res) => {
     const user = req.user;
     req.body.user = user;
     const { isInValid, messages } = addNewsValidation(req.body);
@@ -108,7 +108,7 @@ app.post("/news", verifyToken, async (req, res) => {
     }
 });
 
-app.delete("/bookmark/:id", verifyToken, async (req, res, next) => {
+app.delete("/api/bookmark/:id", verifyToken, async (req, res, next) => {
     try {
         const user = req.user;
         const id = req.params.id;
@@ -127,7 +127,7 @@ app.delete("/bookmark/:id", verifyToken, async (req, res, next) => {
     }
 })
 
-app.get("/bookmark", verifyToken, async (req, res) => {
+app.get("/api/bookmark", verifyToken, async (req, res) => {
     try {
         const user = req.user;
         const bookmarks = await getAllBookMark(user);
@@ -138,7 +138,7 @@ app.get("/bookmark", verifyToken, async (req, res) => {
     }
 });
 
-app.get("/news", verifyToken, async (req, res) => {
+app.get("/api/news", verifyToken, async (req, res) => {
     try {
         const user = req.user;
         const news = await getAllNews(user);
