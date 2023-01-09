@@ -5,6 +5,7 @@ import App from './App';
 import { AppContextProvider } from "./ContextAPI/AppContext";
 import { NewsContextProvider } from "./ContextAPI/NewsContext";
 import { GlobalContextProvider } from "./ContextAPI/GlobalContext";
+import 'react-image-crop/dist/ReactCrop.css'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -5,7 +5,6 @@ import { useAppContext } from "../../ContextAPI/AppContext";
 const ProtectedRoute = (props) => {
     const navigate = useNavigate();
     const { isLoggedIn, validUser } = useAppContext()
-    console.log(validUser, "loading==>");
     const checkUserToken = useCallback(() => {
         const unAuthpaths =  ["/login", "/register"];
         const authPaths =  ["/profile", "/news", "/add/news", "/bookmarks"];

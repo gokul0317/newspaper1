@@ -52,7 +52,6 @@ export const AppContextProvider = (props) => {
         } catch (e) {
             console.log(e, "Update profile error");
             const message = parseErrorMessage(e, "Failed to updated profile");
-            console.log(message, "message")
             showAlert({ message,  severity: "error" });
             setValidUser(false);
         } finally {

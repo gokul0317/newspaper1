@@ -3,6 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
@@ -11,6 +12,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAppContext } from '../ContextAPI/AppContext';
 import { validateProfile } from "../utils/validations/profile";
+import { UploadImage } from "../Components/Profile/UploadImage"
 
 const theme = createTheme();
 
@@ -19,6 +21,7 @@ const initialError = { firstName: "", lastName: "", email: "", password: "" }
 export default function Profile() {
   const { profile, updateProfile, loading } = useAppContext();
   const [userProfile, setUserProfile] = useState(profile);
+  const [uploadView, setUploadView] = useState(false)
   const [errorMessages, setErrorMessage] = useState({ ...initialError });
   const handleUpdateProfile = useCallback((event) => {
     const { name, value } = event.target;
@@ -56,7 +59,7 @@ export default function Profile() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xs" >
         <CssBaseline />
         <Box
           sx={{
@@ -69,10 +72,13 @@ export default function Profile() {
           <Avatar style={{ width: "64px", height: "64px" }} sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <AccountBoxIcon style={{ height: "90%", width: "90%" }} />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h5" style={{ marginBottom: "10px" }}>
             Profile
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Button variant='outlined' onClick={() => setUploadView((vItem) => !vItem)}>
+            {uploadView ? "Profile" : "Upload photo"}
+          </Button>
+          {!uploadView ? <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -129,18 +135,20 @@ export default function Profile() {
                   helperText={errorMessages.password}
                 />
               </Grid>
+              <Grid item style={{ width: "100%" }}>
+                <LoadingButton
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  disabled={loading}
+                  loading={loading}
+                >
+                  Update
+                </LoadingButton>
+              </Grid>
             </Grid>
-            <LoadingButton
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={loading}
-              loading={loading}
-            >
-              Update
-            </LoadingButton>
-          </Box>
+          </Box> : <UploadImage />}
         </Box>
       </Container>
     </ThemeProvider>

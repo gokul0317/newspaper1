@@ -128,7 +128,6 @@ export const NewsContextProvider = (props) => {
         try {
             setBookmarkLoading(true);
             const resp = await customNewsService.getBookmarks(token);
-            console.log(resp.data.data, "resp.data.data===>");
             setBookMarks(resp.data.data);
         } catch (e) {
             console.log("Error getting bookmarks", e)
