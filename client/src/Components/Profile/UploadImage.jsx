@@ -6,7 +6,7 @@ import { DropZone } from "./DropZone";
 export function UploadImage() {
     return (
         <Box component="form" noValidate onSubmit={(e) => e.preventDefault()}  sx={{ mt: 3 }} style={{ width: "100%" }}>
-            <Grid container spacing={2} justifyContent="center">
+            <Grid container spacing={2} marginBottom="10px" justifyContent="center">
                 <DropZone />
             </Grid>
         </Box>

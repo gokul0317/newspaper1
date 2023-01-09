@@ -108,9 +108,8 @@ export const NewsContextProvider = (props) => {
         try {
             setLoading(true)
             let newsList = [];
-            // const promises = [fetchCustomArticles(), fetchNewsApiArtciles()];
-            // console.log(fetchNewsApiArtciles());
-            const promises = [fetchCustomArticles()];
+            const promises = [fetchCustomArticles(), fetchNewsApiArtciles()];
+            // const promises = [fetchCustomArticles()];
             const result = await Promise.allSettled(promises);
             const succeded = result.filter((resultItem) => resultItem.status === 'fulfilled');
             succeded.forEach((item) => newsList = [...newsList, ...item.value]);
