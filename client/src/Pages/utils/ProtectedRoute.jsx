@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../ContextAPI/AppContext";
 
@@ -24,12 +24,6 @@ const ProtectedRoute = (props) => {
         checkUserToken();
     }, [checkUserToken]);
 
-    return (
-        <>
-            {
-                props.children
-            }
-        </>
-    );
+    return props.children
 }
 export default ProtectedRoute;

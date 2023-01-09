@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from "react";
+import React, { createContext, useContext } from "react";
 import useAlert from "../hooks/useAlert";
 import { useTokenLocalStorage } from "../hooks/useTokenLocalStorage";
 
@@ -8,7 +8,7 @@ const initialState = {
     addToken: () => { },
     getToken: () => { },
     token: null,
-    removeToken: () => {}
+    removeToken: () => {},
 };
 
 const GlobalContext = createContext(initialState);
@@ -20,14 +20,14 @@ export const useGlobalContext = () => {
 export const GlobalContextProvider = (props) => {
     const { alertItem, showAlert } = useAlert();
     const { addToken, getToken, removeToken } = useTokenLocalStorage();
-    const token = useMemo(() => getToken(), [getToken])
+    const token = getToken();
     const GlobalContextData = {
         alertItem,
         showAlert,
         addToken,
         getToken,
         token,
-        removeToken
+        removeToken,
     };
     return <GlobalContext.Provider value={GlobalContextData}>{props.children}</GlobalContext.Provider>
 }

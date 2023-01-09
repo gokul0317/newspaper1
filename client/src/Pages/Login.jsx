@@ -53,6 +53,8 @@ export default function Login() {
         addToken(resp.data?.data.token);
         setIsLoggedIn(true);
         navigate("/");
+        setEmail("");
+        setPassword("");
       } catch(e) {
         console.log(e, "Login failed");
         const message = parseErrorMessage(e, "Failed to login");

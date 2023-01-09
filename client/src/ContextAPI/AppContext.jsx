@@ -19,7 +19,8 @@ const initialState = {
     userService,
     setIsLoggedIn: () => { },
     validUser: null,
-    resetAppState: () => {}
+    resetAppState: () => {},
+    setLogout: () => {},
 };
 
 const AppContext = createContext(initialState);
@@ -29,7 +30,7 @@ export const useAppContext = () => {
 }
 
 export const AppContextProvider = (props) => {
-    const { token, showAlert } = useGlobalContext();
+    const { token, showAlert, getToken } = useGlobalContext();
     const [isLoggedIn, setIsLoggedIn] = useState(initialState.isLoggedIn);
     const [profile, setProfile] = useState(initialState?.profile);
     const [loading, setLoading] = useState(initialState?.loading);
@@ -62,23 +63,27 @@ export const AppContextProvider = (props) => {
 
     useEffect(() => {
         const cb = async () => {
-            if (token) {
+            if (token && getToken()) {
                 try {
                     setLoading(true);
                     const resp = await userService.getProfile(token);
                     setProfile({ ...resp.data.data, password: "" });
                     if (resp) {
                         setIsLoggedIn(true);
+                        setValidUser(true);
                     } else {
                         setIsLoggedIn(false);
+                        setValidUser(false);
                     }
                 } catch (e) {
                     setIsLoggedIn(false);
+                    setValidUser(false);
                 } finally {
                     setLoading(false);
                 }
             } else {
                 setIsLoggedIn(false);
+                setValidUser(false);
             }
         }
         cb();
@@ -94,7 +99,7 @@ export const AppContextProvider = (props) => {
         userService,
         setIsLoggedIn,
         validUser,
-        resetAppState
+        resetAppState,
     };
 
     return <AppContext.Provider value={AppContextData}>{props.children}</AppContext.Provider>

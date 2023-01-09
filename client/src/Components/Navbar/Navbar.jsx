@@ -48,11 +48,11 @@ export function Navbar() {
         setAnchorElUser(null);
     }, [setAnchorElUser]);
 
-    const handleLogout = useCallback(() => {
+    const handleLogout = useCallback(async () => {
         handleCloseUserMenu();
-        removeToken();
         resetAppState();
         resetNewsState();
+        removeToken();
         navigate("/login");
     }, [handleCloseUserMenu, removeToken, navigate, resetAppState, resetNewsState])
 
